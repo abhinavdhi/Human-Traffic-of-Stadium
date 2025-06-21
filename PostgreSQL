@@ -1,0 +1,21 @@
+WITH Filtered AS (
+    SELECT *, 
+           ROW_NUMBER() OVER (ORDER BY id) AS rn
+    FROM Stadium
+    WHERE people >= 100
+),
+Grouped AS (
+    SELECT *, id - rn AS grp
+    FROM Filtered
+),
+Final AS (
+    SELECT grp
+    FROM Grouped
+    GROUP BY grp
+    HAVING COUNT(*) >= 3
+)
+SELECT s.id, s.visit_date, s.people
+FROM Grouped s
+JOIN Final f ON s.grp = f.grp
+ORDER BY s.visit_date;
+ 
